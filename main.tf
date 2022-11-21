@@ -5,7 +5,7 @@ locals {
     instance_class           = "db.t3.micro"
     skip_final_snapshot      = true
     multi_az                 = true
-    backup_window            = "20:41-22:41"
+    backup_window            = "01:46-03:46"
     backup_retention_period  = 1
     delete_automated_backups = false
 
@@ -15,6 +15,11 @@ locals {
     snapshot_identifier = null
 
     slave_count = 3
+
+    # PITR stuff
+    source_db_instance_automated_backups_arn = "arn:aws:rds:eu-central-1:824543128771:auto-backup:ab-2w6vnne7eqkdttbmhkn23kzelnuoxyrlxmyc32a"
+    use_latest_restorable_time               = null
+    restore_time                             = "2022-11-21T14:00:00.00Z"
 }
 
 resource "aws_db_instance" "rds1" {
@@ -32,6 +37,18 @@ resource "aws_db_instance" "rds1" {
     delete_automated_backups = local.delete_automated_backups
 
     snapshot_identifier      = local.snapshot_identifier
+
+    dynamic "restore_to_point_in_time" {
+
+        for_each = local.use_latest_restorable_time == true || local.restore_time != null ? [1] : []
+
+        content {
+            source_db_instance_automated_backups_arn = local.source_db_instance_automated_backups_arn
+            use_latest_restorable_time               = local.use_latest_restorable_time
+            restore_time                             = local.restore_time
+        }
+
+    }    
 }
 
 resource "aws_db_instance" "rds_slave" {
