@@ -5,7 +5,7 @@ locals {
     instance_class           = "db.t3.micro"
     skip_final_snapshot      = true
     multi_az                 = true
-    backup_window            = "01:46-03:46"
+    backup_window            = "21:37-23:37"
     backup_retention_period  = 1
     delete_automated_backups = false
 
@@ -14,12 +14,12 @@ locals {
     
     snapshot_identifier = null
 
-    slave_count = 3
+    slave_count = 0
 
     # PITR stuff
-    source_db_instance_automated_backups_arn = "arn:aws:rds:eu-central-1:824543128771:auto-backup:ab-2w6vnne7eqkdttbmhkn23kzelnuoxyrlxmyc32a"
+    source_db_instance_automated_backups_arn = null
     use_latest_restorable_time               = null
-    restore_time                             = "2022-11-21T14:00:00.00Z"
+    restore_time                             = null
 }
 
 resource "aws_db_instance" "rds1" {
